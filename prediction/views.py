@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.db import models
 
+
 from . import surprisePredictions, queryDbForClassicRoute
 
 def index(request):
@@ -30,13 +31,13 @@ def isThisRouteAClassic(request):
     
 def searchForThisRoute(request,requestedId):
     
-    AllAuthorAndListItems = queryDbForClassicRoute.queryForRoute(requestedId)
+    ClassicListsThisRouteIsOn = queryDbForClassicRoute.queryForRoute(requestedId)
     
-    print (type(AllAuthorAndListItems))
+    print (type(ClassicListsThisRouteIsOn))
     
-    print(AllAuthorAndListItems)
+    print(ClassicListsThisRouteIsOn)
 
-    return HttpResponse(AllAuthorAndListItems.routeList.all())
+    return HttpResponse(ClassicListsThisRouteIsOn)
     
     
 # Create your views here.
