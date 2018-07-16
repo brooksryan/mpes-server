@@ -108,15 +108,7 @@ class FollowingTickFeed ():
         return self.paginateFollowingTicks().page(pageNum).object_list
         
         
-    
-            
-        
 
-thisTickFeed = FollowingTickFeed(111978840)
-
-thisPaginatedFeed = thisTickFeed.getTenMostRecentTicks(3)
-
-print(thisPaginatedFeed)
     
     
             
