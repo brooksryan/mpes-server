@@ -14,4 +14,6 @@ urlpatterns = [
     
     path('status/<int:creatorMpUserId>/<int:connectionMpUserId>/', views.checkThisConnection, name='checkThisConnection'),
     
+    path('tickFeed/<int:userMpId>/<int:pageNumber>/', views.getThisUsersFollowersTickFeed, name='tickFeed'),
+    
 ]

@@ -16,9 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.views.generic import RedirectView
-from django.conf.urls import include
+from django.conf.urls import url, include
 from django.conf import settings
 from django.conf.urls.static import static
+
+# REST stuff
+from rest_framework import routers
+from users import views
 
 """from spotlight.cross_validation import random_train_test_split
 from spotlight.datasets.movielens import get_movielens_dataset
@@ -41,6 +45,7 @@ urlpatterns = [
     path('prediction/', include('prediction.urls')),
     path('', RedirectView.as_view(url='/prediction/')),
     path('users/', include('users.urls')),
+    path('ticksApi/', include('ticksApi.urls'))
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

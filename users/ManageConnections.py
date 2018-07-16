@@ -1,8 +1,10 @@
-import os
-
 # Takes in an mpUserId and outputs a user object
 from django.db import models
+from django.db.models import Q
+from django.core.paginator import Paginator
+
 from .models import *
+import ticksApi
 
 def getThisUsersAppId (mpUserId):
     
@@ -66,4 +68,67 @@ def orchestrateDeletingAConnection (creatorMpUserId,newConnectionMpUserId):
     connectionToDelete = deleteAConnection(CreatorUserIdToDelete,ConnectionUserIdToDelete)
     
     return connectionToDelete
+    
+    
+class FollowingTickFeed ():
+
+    def __init__(self, mpUserId):
+        
+        self.mpUserId = mpUserId
+    
+    def myUserId(self):
+        
+        return getThisUsersAppId(self.mpUserId)
+    
+    def getMyFollowersTicks(self):
+        
+        theseUsers = []
+    
+        theseFollowers = self.myUserId().get_following()
+
+        for item in theseFollowers:
+            
+            thisAppId = getThisUsersAppId(item.following)
+            
+            print(thisAppId.id)
+            
+            theseUsers.append(thisAppId.id)
+            
+        return ticksApi.models.userTick.objects.filter(creator__in=theseUsers).order_by('-date')
+        
+    def paginateFollowingTicks(self):
+        
+        thisPaginator = Paginator(self.getMyFollowersTicks(), 10)
+        
+        return(thisPaginator)
+        
+        
+    def getTenMostRecentTicks(self, pageNum):
+        
+        return self.paginateFollowingTicks().page(pageNum).object_list
+        
+        
+    
+            
+        
+
+thisTickFeed = FollowingTickFeed(111978840)
+
+thisPaginatedFeed = thisTickFeed.getTenMostRecentTicks(3)
+
+print(thisPaginatedFeed)
+    
+    
+            
+            
+            
+            
+            
+# thisFeed = FollowingTickFeed(200105441)
+
+# thisFeed.myUserId()
+
+# thisFeed.getMyFollowersTicks()
+
+
     

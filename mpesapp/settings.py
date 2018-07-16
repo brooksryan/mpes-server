@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'prediction.apps.PredictionConfig',
     'users.apps.UsersConfig',
+    'ticksApi.apps.TicksapiConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

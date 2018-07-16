@@ -1,11 +1,18 @@
 import os
 
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.core import serializers
 from django.db import models
+
+# REST stuff
+from rest_framework import viewsets
 
 # Import file for connection management
 from . import ManageConnections
+
+# import models
+from .models import MpUserProfile, Connections
 
 def index(request):
     
@@ -43,3 +50,24 @@ def deleteThisConnection (request, creatorMpId, connectionMpId):
     connectionDeleted = ManageConnections.orchestrateDeletingAConnection(creatorMpId, connectionMpId)
     
     return HttpResponse(connectionDeleted)
+    
+def getThisUsersFollowersTickFeed(request, userMpId, pageNumber):
+    
+    thisUserFeed = ManageConnections.FollowingTickFeed(userMpId)
+    
+    theseRecentTicks = thisUserFeed.getTenMostRecentTicks(pageNumber)
+    
+    serializedData = serializers.serialize('json', list(theseRecentTicks))
+    
+    return JsonResponse(serializedData, safe=False)
+    
+    
+
+
+
+# @api_view(['GET'])
+# def api_root(request, format=None):
+#     return Response({
+#       'users': reverse('users:user-list', request=request, format=format),
+#       'todos': reverse('todos:todo-list', request=request, format=format),
+#     })
