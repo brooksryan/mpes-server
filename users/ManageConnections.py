@@ -3,24 +3,34 @@ from django.db import models
 from django.db.models import Q
 from django.core.paginator import Paginator
 
-from .models import *
+# IMPORTS THE NEW USER HELPER
+from .UserManagement import createNewUserHelper
+
+# IMPORTS MODELS
+from .models import MpUserProfile, Connections
+
+
 import ticksApi
 
 def getThisUsersAppId (mpUserId):
     
-    thisUserId, created = MpUserProfile.objects.get_or_create(user_id=mpUserId)
+    thisUser = createNewUserHelper(mpUserId)
+    
+    thisUserId = thisUser.createAndSaveANewUser()
+    
+    # thisUserId, created = MpUserProfile.objects.get_or_create(user_id=mpUserId)
     
     return thisUserId
 
 def areThesePeopleConnected(creatorMpUserId, connectionMpUserId):
     
-    creatorIdToFind = getThisUsersAppId(creatorMpUserId)
+    creatorIdToFind = createNewUserHelper(creatorMpUserId)
     
-    connectionIdToFind = getThisUsersAppId(connectionMpUserId)
+    connectionIdToFind = createNewUserHelper(connectionMpUserId)
     
     try:
     
-        Connections.objects.get(creator = creatorIdToFind, following = connectionIdToFind)
+        Connections.objects.get(creator = creatorIdToFind.createAndSaveANewUser(), following = connectionIdToFind.createAndSaveANewUser())
         
     except:
         
@@ -36,9 +46,7 @@ def getOrCreateANewConnection (creatorUserId, newConnectionUserId):
     
     print(created)
     
-    return thisConnection
-
-    
+    return created
 
 def orchestrateANewConnection (creatorMpUserId,newConnectionMpUserId):
     
@@ -85,10 +93,16 @@ class FollowingTickFeed ():
         theseUsers = []
     
         theseFollowers = self.myUserId().get_following()
+        
+        print("this is after successfully returning followers from model")
+        print (theseFollowers)
 
         for item in theseFollowers:
             
-            thisAppId = getThisUsersAppId(item.following)
+            print("this is the get my followers ticks iterator")
+            print(item)
+            
+            thisAppId = item.following
             
             print(thisAppId.id)
             

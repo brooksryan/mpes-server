@@ -9,7 +9,9 @@ from django.db import models
 from rest_framework import viewsets
 
 # Import file for connection management
-from . import ManageConnections
+from . import ManageConnections, UserManagement
+
+from ticksApi.getUserTicks import getThisStuff
 
 # import models
 from .models import MpUserProfile, Connections
@@ -32,10 +34,16 @@ def createANewConnection(request, creatorMpId, connectionMpId):
     print("first call")
     thisNewConnection = ManageConnections.orchestrateANewConnection(creatorMpId, connectionMpId)
     
-    print("print results")
-    print (thisNewConnection.creator)
-    print (" followed ") 
-    print (thisNewConnection.following)
+    newConnectionTicksToGet = ManageConnections.getThisUsersAppId(connectionMpId)
+    
+    print (newConnectionTicksToGet.export_url)
+    
+    getThisStuff(newConnectionTicksToGet)
+    
+    # print("print results")
+    # print (thisNewConnection.creator)
+    # print (" followed ") 
+    # print (thisNewConnection.following)
     
     return HttpResponse(thisNewConnection)
     

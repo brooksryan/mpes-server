@@ -55,12 +55,22 @@ class userTick(models.Model):
     # "Your Rating"
     my_difficulty = models.CharField(max_length=15, blank=True, null=True)
     
+    #creator name from MP
+    user_name_from_mp = models.CharField(max_length=15, blank=True, null=True)
+    
+    # creator mp ID
     creator = models.ForeignKey(MpUserProfile, on_delete=models.CASCADE, related_name="tick_creator")
     
     def __str__(self):
+        
         """
         String for representing the MyModelName object (in Admin site etc.)
         """
+        
+        if self.route_name == None: 
+            
+            return "THIS ROUTE DOES NOT HAVE A NAME"
+            
         return self.route_name
 
 # Create your models here.

@@ -12,7 +12,9 @@ from .models import userTick
 # User profile model
 from users.models import MpUserProfile
 # function for getting the users mpes id from their MP id
-from users.ManageConnections import getThisUsersAppId
+# from users.ManageConnections import getThisUsersAppId
+# from users.UserManagement import createNewUserHelper
+
 
 
 def getOrCreateANewTickBasedOnDateAndUser (tickObject):
@@ -40,7 +42,9 @@ def getOrCreateANewTickBasedOnDateAndUser (tickObject):
         return(savingThisTick)
 
 
-def createTickFromModel(thisList, MpUserId):
+def createTickFromModel(thisList, thisUserObject):
+    
+    print(thisList)
     
     thisTick = userTick()
     
@@ -96,16 +100,24 @@ def createTickFromModel(thisList, MpUserId):
     # "Your Rating"
     thisTick.my_difficulty = thisList[thisListNumber]
     
-    thisTick.creator = MpUserProfile.objects.get(user_id = MpUserId)
+    # print(MpUserId)
+    
+    thisTick.user_name_from_mp = thisUserObject.name_from_mp
+    
+    thisTick.creator = MpUserProfile.objects.get(user_id = thisUserObject.user_id)
     
     # print(thisTick())
     getOrCreateANewTickBasedOnDateAndUser (thisTick)
 
-def getThisStuff(thisCsvUrl, thisMpUserId):
+# def getThisStuff(thisCsvUrl, thisMpUserId):
     
-    thisTickListUserAppId = getThisUsersAppId(thisMpUserId)
+def getThisStuff(userObject):
+    
+    # print (thisCsvUrl, thisMpUserId)
+    
+    # thisTickListUserAppId = getThisUsersAppId(thisMpUserId)
 
-    r = requests.get(thisCsvUrl)
+    r = requests.get(str(userObject.export_url))
     
     # thisNewFile = open(r.content)
     
@@ -128,10 +140,12 @@ def getThisStuff(thisCsvUrl, thisMpUserId):
                 print ("caught you")
                 
         else:
+            
+            print(lineNumber)
         
             lineNumber += 1
             
-            amIANewTick = createTickFromModel(line, thisTickListUserAppId)
+            amIANewTick = createTickFromModel(line, userObject)
 
     
-# getThisStuff('https://www.mountainproject.com/user/106853948/justin-johnsen/tick-export', 106853948)
+    # getThisStuff('https://www.mountainproject.com/user/111816786/tick-export', 111816786)
