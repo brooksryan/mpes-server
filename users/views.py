@@ -63,6 +63,8 @@ def getThisUsersFollowersTickFeed(request, userMpId, pageNumber):
     
     thisUserFeed = ManageConnections.FollowingTickFeed(userMpId)
     
+    # thisUserFeed.thisFeedObject.updateThisFeed()
+    
     theseRecentTicks = thisUserFeed.getTenMostRecentTicks(pageNumber)
     
     serializedData = serializers.serialize('json', list(theseRecentTicks))

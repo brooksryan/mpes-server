@@ -2,7 +2,7 @@
 import requests
 import csv
 
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 
 # Local model imports
@@ -16,6 +16,41 @@ from users.models import MpUserProfile
 # from users.UserManagement import createNewUserHelper
 
 
+# # _-_-_-_-_-_-_-_-_-_-_-NEW SHIT_-_-_-_-_-_-_-_-_-_-_-_-_-
+
+# # GET THE FEED STATUS FOR A USER
+
+# def getUserFeedStatus(thisUserObject, thisFeedStatus):
+    
+#     return thisUserObject.doINeedToBeUpdated()
+    
+    
+# brooks = MpUserProfile.objects.get(user_id = 111978840)
+
+
+
+# thisFeed = feedStatus.objects.get(tickFeedOwner = brooks)
+
+# print(thisFeed.doINeedToBeUpdated())
+
+# thisFeed.save()
+
+# theseUsers = brooks.get_following()
+
+# # theseUsers = brooks.get_following()
+
+# # def updateThesePeoplesFeeds(listOfUserObjects):
+    
+# #     print(listOfUserObjects)
+    
+# #     for userObjectItem in listOfUserObjects:
+        
+# #         getThisStuff(userObjectItem)
+        
+# # updateThesePeoplesFeeds(theseUsers)
+        
+
+# # _-_-_-_-_-_-_-_-_-_-_-END NEW SHIT_-_-_-_-_-_-_-_-_-_-_-_
 
 def getOrCreateANewTickBasedOnDateAndUser (tickObject):
     
@@ -29,17 +64,33 @@ def getOrCreateANewTickBasedOnDateAndUser (tickObject):
         
         thisTick = userTick.objects.get(creator = tickObject.creator, date = tickObject.date, route_url = tickObject.route_url)
         
-        print(thisTick)
+        print("NOTHING NEW HERE: this is an old tick")
+        
+        # print(thisTick)
         
         return(thisTick)
         
     except ObjectDoesNotExist:
-    
+        
+        print("NEW SHIT: this is a new tick")
+        
         thisTick = "hello"
         
         savingThisTick = tickObject.save()
         
         return(savingThisTick)
+    
+    except ValueError:
+        
+        print("bummer couldnt save this tick")
+        
+        print(tickObject)
+        
+    except ValidationError:
+        
+        print("bummer couldnt save this tick")
+        
+        print(tickObject)
 
 
 def createTickFromModel(thisList, thisUserObject):
@@ -108,8 +159,6 @@ def createTickFromModel(thisList, thisUserObject):
     
     # print(thisTick())
     getOrCreateANewTickBasedOnDateAndUser (thisTick)
-
-# def getThisStuff(thisCsvUrl, thisMpUserId):
     
 def getThisStuff(userObject):
     
