@@ -3,24 +3,36 @@ from django.db import models
 from django.db.models import Q
 from django.core.paginator import Paginator
 
-from .models import *
+# IMPORTS THE NEW USER HELPER
+from .UserManagement import createNewUserHelper
+
+# IMPORTS MODELS
+from .models import MpUserProfile, Connections
+
+from ticksApi.models import feedStatus
+
+
 import ticksApi
 
 def getThisUsersAppId (mpUserId):
     
-    thisUserId, created = MpUserProfile.objects.get_or_create(user_id=mpUserId)
+    thisUser = createNewUserHelper(mpUserId)
+    
+    thisUserId = thisUser.createAndSaveANewUser()
+    
+    # thisUserId, created = MpUserProfile.objects.get_or_create(user_id=mpUserId)
     
     return thisUserId
 
 def areThesePeopleConnected(creatorMpUserId, connectionMpUserId):
     
-    creatorIdToFind = getThisUsersAppId(creatorMpUserId)
+    creatorIdToFind = createNewUserHelper(creatorMpUserId)
     
-    connectionIdToFind = getThisUsersAppId(connectionMpUserId)
+    connectionIdToFind = createNewUserHelper(connectionMpUserId)
     
     try:
     
-        Connections.objects.get(creator = creatorIdToFind, following = connectionIdToFind)
+        Connections.objects.get(creator = creatorIdToFind.createAndSaveANewUser(), following = connectionIdToFind.createAndSaveANewUser())
         
     except:
         
@@ -36,9 +48,7 @@ def getOrCreateANewConnection (creatorUserId, newConnectionUserId):
     
     print(created)
     
-    return thisConnection
-
-    
+    return created
 
 def orchestrateANewConnection (creatorMpUserId,newConnectionMpUserId):
     
@@ -75,38 +85,57 @@ class FollowingTickFeed ():
     def __init__(self, mpUserId):
         
         self.mpUserId = mpUserId
-    
-    def myUserId(self):
         
-        return getThisUsersAppId(self.mpUserId)
+        self.myUserId = getThisUsersAppId(mpUserId)
+        
+        self.thisFeedObject = feedStatus.objects.get(tickFeedOwner = self.myUserId)
     
+    # input = appId output = all of the ticks from that users followers
     def getMyFollowersTicks(self):
         
         theseUsers = []
     
-        theseFollowers = self.myUserId().get_following()
+        theseFollowers = self.myUserId.get_following()
+        
+        print("this is after successfully returning followers from model")
+        print (theseFollowers)
 
         for item in theseFollowers:
             
-            thisAppId = getThisUsersAppId(item.following)
+            print("this is the get my followers ticks iterator")
+            print(item)
+            
+            thisAppId = item.following
             
             print(thisAppId.id)
             
             theseUsers.append(thisAppId.id)
             
         return ticksApi.models.userTick.objects.filter(creator__in=theseUsers).order_by('-date')
-        
+    
+    # Input is getMyFollowersTicks (list of all this users following ticks)
+    # Output is a paginated list of ticks
     def paginateFollowingTicks(self):
         
         thisPaginator = Paginator(self.getMyFollowersTicks(), 10)
         
         return(thisPaginator)
         
-        
+    # Input is a pageNumber and a paginated list of ticks
+    # Output is the page of the paginated tick list per pageNumb
     def getTenMostRecentTicks(self, pageNum):
         
-        return self.paginateFollowingTicks().page(pageNum).object_list
+        self.thisFeedObject.doINeedToBeUpdated()
         
+        if self.thisFeedObject.needsToBeUpdatedStatus == True:
+            
+            self.thisFeedObject.updateThisFeed()
+        
+            return self.paginateFollowingTicks().page(pageNum).object_list
+            
+        else:
+        
+            return self.paginateFollowingTicks().page(pageNum).object_list
         
 
     
