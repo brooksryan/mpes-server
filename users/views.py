@@ -65,11 +65,33 @@ def getThisUsersFollowersTickFeed(request, userMpId, pageNumber):
     
     # thisUserFeed.thisFeedObject.updateThisFeed()
     
-    theseRecentTicks = thisUserFeed.getTenMostRecentTicks(pageNumber)
+    theseRecentTicksPageObject = thisUserFeed.getTenMostRecentTicks(pageNumber)
+    
+    theseRecentTicks = theseRecentTicksPageObject.object_list
     
     serializedData = serializers.serialize('json', list(theseRecentTicks))
     
-    return JsonResponse(serializedData, safe=False)
+    nextPage = pageNumber + 1
+    
+    hasNextPage = theseRecentTicksPageObject.has_next()
+    
+    hasPreviousPage = theseRecentTicksPageObject.has_previous()
+    
+    thisFeedData = {
+        
+        'feedItems' : serializedData,
+        
+        'currentPage' : pageNumber,
+        
+        'nextPage': nextPage,
+        
+        'hasNextPage': hasNextPage,
+        
+        'hasPreviousPage': hasPreviousPage
+        
+    }
+    
+    return JsonResponse(thisFeedData, safe=False)
     
     
 
