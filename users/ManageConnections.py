@@ -131,11 +131,11 @@ class FollowingTickFeed ():
             
             self.thisFeedObject.updateThisFeed()
         
-            return self.paginateFollowingTicks().page(pageNum).object_list
+            return self.paginateFollowingTicks().page(pageNum)
             
         else:
         
-            return self.paginateFollowingTicks().page(pageNum).object_list
+            return self.paginateFollowingTicks().page(pageNum)
         
 
     
