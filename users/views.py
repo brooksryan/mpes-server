@@ -9,7 +9,9 @@ from django.db import models
 from rest_framework import viewsets
 
 # Import file for connection management
-from . import ManageConnections
+from . import ManageConnections, UserManagement
+
+from ticksApi.getUserTicks import getThisStuff
 
 # import models
 from .models import MpUserProfile, Connections
@@ -32,10 +34,16 @@ def createANewConnection(request, creatorMpId, connectionMpId):
     print("first call")
     thisNewConnection = ManageConnections.orchestrateANewConnection(creatorMpId, connectionMpId)
     
-    print("print results")
-    print (thisNewConnection.creator)
-    print (" followed ") 
-    print (thisNewConnection.following)
+    newConnectionTicksToGet = ManageConnections.getThisUsersAppId(connectionMpId)
+    
+    print (newConnectionTicksToGet.export_url)
+    
+    getThisStuff(newConnectionTicksToGet)
+    
+    # print("print results")
+    # print (thisNewConnection.creator)
+    # print (" followed ") 
+    # print (thisNewConnection.following)
     
     return HttpResponse(thisNewConnection)
     
@@ -55,11 +63,35 @@ def getThisUsersFollowersTickFeed(request, userMpId, pageNumber):
     
     thisUserFeed = ManageConnections.FollowingTickFeed(userMpId)
     
-    theseRecentTicks = thisUserFeed.getTenMostRecentTicks(pageNumber)
+    # thisUserFeed.thisFeedObject.updateThisFeed()
+    
+    theseRecentTicksPageObject = thisUserFeed.getTenMostRecentTicks(pageNumber)
+    
+    theseRecentTicks = theseRecentTicksPageObject.object_list
     
     serializedData = serializers.serialize('json', list(theseRecentTicks))
     
-    return JsonResponse(serializedData, safe=False)
+    nextPage = pageNumber + 1
+    
+    hasNextPage = theseRecentTicksPageObject.has_next()
+    
+    hasPreviousPage = theseRecentTicksPageObject.has_previous()
+    
+    thisFeedData = {
+        
+        'feedItems' : serializedData,
+        
+        'currentPage' : pageNumber,
+        
+        'nextPage': nextPage,
+        
+        'hasNextPage': hasNextPage,
+        
+        'hasPreviousPage': hasPreviousPage
+        
+    }
+    
+    return JsonResponse(thisFeedData, safe=False)
     
     
 
