@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.db import models
 
 
-from . import surprisePredictions, queryDbForClassicRoute
+from . import queryDbForClassicRoute
 
 def index(request):
     
