@@ -22,7 +22,7 @@ class userTick(models.Model):
     date = models.DateField()
     
     # Route
-    route_name = models.CharField(max_length=100)
+    route_name = models.CharField(max_length=200)
     
     # Rating
     difficulty = models.CharField(max_length=15)
@@ -40,7 +40,7 @@ class userTick(models.Model):
     pitches = models.IntegerField(default=1)
     
     # Location
-    location = models.CharField(max_length=100)
+    location = models.CharField(max_length=300)
     
     partner = models.ForeignKey(MpUserProfile, on_delete=models.CASCADE, related_name="partners", blank=True, null=True)
     
@@ -63,7 +63,7 @@ class userTick(models.Model):
     my_difficulty = models.CharField(max_length=15, blank=True, null=True)
     
     #creator name from MP
-    user_name_from_mp = models.CharField(max_length=15, blank=True, null=True)
+    user_name_from_mp = models.CharField(max_length=100, blank=True, null=True)
     
     # creator mp ID
     creator = models.ForeignKey(MpUserProfile, on_delete=models.CASCADE, related_name="tick_creator")
