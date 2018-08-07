@@ -45,7 +45,9 @@ urlpatterns = [
     path('prediction/', include('prediction.urls')),
     path('', RedirectView.as_view(url='/prediction/')),
     path('users/', include('users.urls')),
-    path('ticksApi/', include('ticksApi.urls'))
+    path('ticksApi/', include('ticksApi.urls')),
+    path('routestats/', include('routestats.urls'))
+    
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
