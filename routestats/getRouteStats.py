@@ -1,6 +1,11 @@
 from django.db import models
 from django.db.models import Avg, Max, Min
 
+# For rounding ticks
+import math, re
+
+from statistics import median
+
 from ticksApi.models import userTick
 
 # class thisRoutesStatsHelper():
@@ -17,18 +22,28 @@ class RouteStatHelper():
     
     def __init__(self, baseQueryFieldInput):
         
+        # route URL to search for ticks
         self.baseQueryFieldInput = baseQueryFieldInput
         
+        # returns a list of ticks for the matching route url
         self.theseUsersOriginalTicks = list(userTick.objects.filter(route_url = self.baseQueryFieldInput))
         
+        # returns a querySet object for ticks matching route url (makes filtering easier later)
         self.querySetOfOriginalTicks = userTick.objects.filter(route_url = self.baseQueryFieldInput)
         
+        # Init array to put the lowest tick for the route for each user in
         self.lowestTickDateForUsers = []
         
+        # Stores difficulty for route
         self.originalTickDifficulty = self.theseUsersOriginalTicks[0].difficulty
         
+        # Array of arrays where each array is a list of ticks for a user 
+        # to put all of the ticks users completed before their first tick of a route
         self.filteredTicksByDate = []
         
+        # raw array of all ticks for users ticks users completed before their 
+        # first tick of a route this is different from filteredTicksBydate because
+        # it is not an array of arrays
         self.allTicks = []
         
         self.filterOriginalTicksForFirstSend()
@@ -37,11 +52,20 @@ class RouteStatHelper():
         
         self.parseTicksForNoUsers()
         
+        # initializes dictionary for storing summaries of the number of ticks the
+        # average user completed at each grade before ticking this route for
+        # the first time
         self.tickDictionary = {}
+        
+        self.ticksAtThisGradeDictionary = {}
+        
+        self.topFiveMostFrequentAtThisGradeBeforeTick = []
         
         self.getRouteGradeSummary()
         
-        self.filterOriginalTicksForFirstSend()
+        self.getCountOfRoutesAtSameGrade()
+        
+        # self.getMedianNumberOfRoutesDoneAtThisGrade()
         
     # gets all of the ticks for users who have done this route and filters them
     # for only the ticks that were done before the first time that user ticked
@@ -84,14 +108,16 @@ class RouteStatHelper():
 
             ticksFilteredForDate = userTick.objects.filter(creator=item.creator) \
                 .filter(date__lt = item.date) \
-                .filter(route_type = item.route_type) \
-                .filter(style = item.style)
+                .filter(route_type = item.route_type)
             
             self.filteredTicksByDate.append(ticksFilteredForDate)
         
         print("done with getAllTicksForUsersWhoHaveDoneThisRoute")
         
         return self.filteredTicksByDate
+    
+    # Input is an array of arrays where the childern arrays are arrays of 
+    # query objects for user ticks. 
         
     def parseTicksForNoUsers(self):
         
@@ -104,14 +130,18 @@ class RouteStatHelper():
                 self.allTicks.append(tick)
                 
         return self.allTicks
-        
+    
+    #returns the average number of climbs at each grade people who have ticked
+    #this climb have ticked. 
     def getRouteGradeSummary(self):
         
         print ("I'm in getRouteGradeSummary")
         
         for tick in self.allTicks:
             
-            Difficultykey = tick.difficulty
+            splitTickDifficulty = re.split('\s|[a-d]\/|\+|\-',tick.difficulty)
+            
+            Difficultykey = splitTickDifficulty[0]
             
             if Difficultykey in self.tickDictionary:
                 
@@ -120,6 +150,20 @@ class RouteStatHelper():
             else:
                 
                 self.tickDictionary[Difficultykey] = 1
+        
+        for key, value in self.tickDictionary.items():
+            
+            oldValue = value
+            
+            numberOfUsers = len(self.lowestTickDateForUsers)
+            
+            self.tickDictionary[key] = math.floor(oldValue/numberOfUsers)
+            
+        print(self.tickDictionary)
+        
+    def getMedianCountOfClimbsAtEachGrade(self):
+        
+        print("I'm in get median grade")
             
         
     def getCountOfRoutesAtSameGrade(self):
@@ -130,18 +174,51 @@ class RouteStatHelper():
             
             filteredByDifficulty = item.filter(difficulty__contains = self.originalTickDifficulty)
             
-            print(len(filteredByDifficulty))
+            listOfTicksFilteredByDifficulty = list(filteredByDifficulty)
             
-            print(filteredByDifficulty)
+            for tick in listOfTicksFilteredByDifficulty:
+                
+                routeKey = tick.route_name
+                
+                if routeKey in self.ticksAtThisGradeDictionary:
+                    
+                    self.ticksAtThisGradeDictionary[routeKey] +=1
+                    
+                else:
+                    
+                    self.ticksAtThisGradeDictionary[routeKey] = 1
+        
+        sortedDict = sorted(self.ticksAtThisGradeDictionary.items(), key=lambda x: x[1], reverse=True)
+                    
+        self.ticksAtThisGradeDictionary = sortedDict
+        
+        self.topFiveMostFrequentAtThisGradeBeforeTick = sortedDict[0:5]
 
+        print(self.topFiveMostFrequentAtThisGradeBeforeTick)
+        
+    
+    # TODO, GET MEDIAN NUMBER OF CLIMBS AT EACH GRADE
+        
+    # def getMedianNumberOfRoutesDoneAtThisGrade(self):
+        
+    #     print("I'm in getAllTicksForUsersWhoHaveDoneThisRoute")
+        
+    #     numberOfTicksArray = []
+        
+    #     for item in self.filteredTicksByDate:
+            
+    #         filteredByDifficulty = item.filter(difficulty__contains = "5.10a")
+            
+    #         numberOfTicks = len(filteredByDifficulty)
+            
+    #         numberOfTicksArray.append(numberOfTicks)
+            
+    #     print (median(numberOfTicksArray))
+            
+        
 
-thisRouteStats = RouteStatHelper("https://www.mountainproject.com/route/105812520/traveler-buttress")
 
 # thisRouteStats.getAllTicksForUsersWhoHaveDoneThisRoute()
-
-thisRouteStats.getCountOfRoutesAtSameGrade()
-
-print(thisRouteStats.tickDictionary)
 
 
 

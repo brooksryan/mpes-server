@@ -25,7 +25,7 @@ SECRET_KEY = 'p__!!7lg-vk*t-9#(=txu)wv%)6r4$))+aq^0zw0%h&b&s-cv6'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['www.mpes-serve.com', '127.0.0.1','mpes-brooksryan.c9users.io', '178.128.8.175']
+ALLOWED_HOSTS = ['www.mpes-serve.com', '127.0.0.1','mpes-brooksryan.c9users.io', '178.128.8.175','www.mountainproject.com']
 
 
 # Application definition
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'ticksApi.apps.TicksapiConfig',
     'rest_framework',
+    'routestats.apps.RoutestatsConfig'
 ]
 
 MIDDLEWARE = [
@@ -86,7 +87,6 @@ WSGI_APPLICATION = 'mpesapp.wsgi.application'
 
 DATABASES = {
     'default': {
-        
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),                    # Set to empty string for default.
     }

@@ -43,10 +43,10 @@ print(dataset)"""
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('prediction/', include('prediction.urls')),
-    path('', RedirectView.as_view(url='/prediction/')),
     path('users/', include('users.urls')),
     path('ticksApi/', include('ticksApi.urls')),
-    path('routestats/', include('routestats.urls'))
+    path('routestats/', include('routestats.urls')),
+    path('', RedirectView.as_view(url='/prediction/'))
     
 ]
 
