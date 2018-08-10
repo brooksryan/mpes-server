@@ -30,8 +30,6 @@ def getThisUsersId(request,userMpId):
 # def MakeANewConnection(request, userMpId, newConnectionMpId):
     
 def createANewConnection(request, creatorMpId, connectionMpId):
-
-    print("first call")
     thisNewConnection = ManageConnections.orchestrateANewConnection(creatorMpId, connectionMpId)
     
     newConnectionTicksToGet = ManageConnections.getThisUsersAppId(connectionMpId)
