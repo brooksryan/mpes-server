@@ -2,8 +2,10 @@ from django.shortcuts import render
 
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
+
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from .models import userTick, feedStatus
 
@@ -14,6 +16,21 @@ from users.models import MpUserProfile, Connections
 from ticksApi.ticksSerializer import mpUserProfileSerializer, connectionsSerializer
 
 from ticksApi.getUserTicks import getThisStuff
+
+from ticksApi.getAllTicksForRoute import getAllUserTicksForThisRoute
+
+@api_view(['GET', 'POST'])
+def importAllTicksForThisRoute(request):
+
+    thisArrayOfUserTicks = request.GET.getlist('tickArray[]')
+    
+    print (thisArrayOfUserTicks)
+    
+    getAllUserTicksForThisRoute(thisArrayOfUserTicks)
+    
+    return HttpResponse("I finished processing all those ticks, phew")
+    
+
 
 @csrf_exempt
 def mpesUser_list(request):

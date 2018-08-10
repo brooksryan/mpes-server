@@ -77,7 +77,7 @@ def getOrCreateANewTickBasedOnDateAndUser (tickObject):
         thisTick = "hello"
         
         savingThisTick = tickObject.save()
-        
+
         return(savingThisTick)
     
     except ValueError:
@@ -150,8 +150,6 @@ def createTickFromModel(thisList, thisUserObject):
     thisListNumber += 1
     # "Your Rating"
     thisTick.my_difficulty = thisList[thisListNumber]
-    
-    # print(MpUserId)
     
     thisTick.user_name_from_mp = thisUserObject.name_from_mp
     

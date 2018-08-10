@@ -1,8 +1,9 @@
-from django.conf.urls import url
+from django.urls import path
+
 from ticksApi import views
 
 urlpatterns = [
 
-    url(r'^connections/$', views.connections_list),
+   path('routeTickProcessor', views.importAllTicksForThisRoute, name='routeTickProcessor'),
     
 ]

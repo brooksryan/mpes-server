@@ -3,5 +3,7 @@ from . import views
 
 
 urlpatterns = [
+    
+    path('getStats/', views.getThisRouteStats, name='getRouteStats')
 
 ]
