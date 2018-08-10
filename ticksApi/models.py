@@ -25,16 +25,16 @@ class userTick(models.Model):
     route_name = models.CharField(max_length=200)
     
     # Rating
-    difficulty = models.CharField(max_length=15)
+    difficulty = models.CharField(max_length=500)
     
     # Notes
-    notes = models.CharField(max_length=300, blank=True, null=True)
+    notes = models.CharField(max_length=1000000, blank=True, null=True)
     
     # URL
-    route_url = models.CharField(max_length=300)
+    route_url = models.CharField(max_length=500)
     
     # Calculate Route ID
-    route_id = models.CharField(max_length=15)
+    route_id = models.CharField(max_length=500)
     
     # Pitches
     pitches = models.IntegerField(default=1)
@@ -60,7 +60,7 @@ class userTick(models.Model):
     route_type = models.CharField(max_length=100, blank=True, null=True)
     
     # "Your Rating"
-    my_difficulty = models.CharField(max_length=15, blank=True, null=True)
+    my_difficulty = models.CharField(max_length=500, blank=True, null=True)
     
     #creator name from MP
     user_name_from_mp = models.CharField(max_length=100, blank=True, null=True)
